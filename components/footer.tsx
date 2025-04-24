@@ -24,7 +24,7 @@ export default function Footer() {
               <Linkedin className="h-6 w-6" />
             </Link>
           </div>
-          <p className="text-sm">© 2024 Canes Motorsports. All rights reserved.</p>
+          <p className="text-sm">© 2025 Canes Motorsports. All rights reserved.</p>
         </div>
       </div>
     </footer>
