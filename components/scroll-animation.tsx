@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect, useState, memo, useMemo } from "react"
 import { cn } from "@/lib/utils"
 
 interface ScrollAnimationProps {
@@ -14,7 +14,7 @@ interface ScrollAnimationProps {
   duration?: number
 }
 
-export default function ScrollAnimation({
+function ScrollAnimation({
   children,
   className,
   animation = "fade-up",
@@ -35,6 +35,7 @@ export default function ScrollAnimation({
       },
       {
         threshold,
+        rootMargin: "100px 0px",
       },
     )
 
@@ -50,21 +51,21 @@ export default function ScrollAnimation({
     }
   }, [threshold])
 
-  const getAnimationClasses = () => {
-    const baseClasses = "transition-all"
+  const animationClasses = useMemo(() => {
+    const baseClasses = "transition-all ease-out"
     const durationClass = `duration-${Math.round(duration * 1000)}`
     const delayClass = delay > 0 ? `delay-${delay * 1000}` : ""
 
     if (!isVisible) {
       switch (animation) {
         case "fade-up":
-          return `${baseClasses} opacity-0 translate-y-10`
+          return `${baseClasses} opacity-0 translate-y-8`
         case "fade-in":
           return `${baseClasses} opacity-0`
         case "slide-in-left":
-          return `${baseClasses} opacity-0 -translate-x-10`
+          return `${baseClasses} opacity-0 -translate-x-8`
         case "slide-in-right":
-          return `${baseClasses} opacity-0 translate-x-10`
+          return `${baseClasses} opacity-0 translate-x-8`
         case "zoom-in":
           return `${baseClasses} opacity-0 scale-95`
         default:
@@ -73,11 +74,13 @@ export default function ScrollAnimation({
     }
 
     return `${baseClasses} ${durationClass} ${delayClass} opacity-100 translate-y-0 translate-x-0 scale-100`
-  }
+  }, [isVisible, animation, duration, delay])
 
   return (
-    <div ref={ref} className={cn(getAnimationClasses(), className)}>
+    <div ref={ref} className={cn(animationClasses, className)}>
       {children}
     </div>
   )
 }
+
+export default memo(ScrollAnimation)

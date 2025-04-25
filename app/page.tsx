@@ -4,19 +4,22 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import ScrollAnimation from "@/components/scroll-animation"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0)
 
-  useEffect(() => {
-    const handleScroll = () => {
+  const handleScroll = useCallback(() => {
+    // Use requestAnimationFrame for smoother animations
+    requestAnimationFrame(() => {
       setScrollY(window.scrollY)
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    })
   }, [])
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [handleScroll])
 
   return (
     <>
@@ -24,9 +27,9 @@ export default function Home() {
       <section className="relative h-[60vh] w-full bg-black overflow-hidden">
         <div className="absolute inset-0 bg-black/75 z-10"></div>
         <div 
-          className="absolute inset-0 transition-transform duration-300"
+          className="absolute inset-0 transition-transform duration-700 ease-out will-change-transform"
           style={{
-            transform: `scale(${1 + scrollY * 0.0005})`,
+            transform: `scale(${1 + scrollY * 0.0003})`,
           }}
         >
           <Image
@@ -35,6 +38,8 @@ export default function Home() {
             fill
             className="object-cover"
             priority
+            quality={90}
+            sizes="100vw"
           />
         </div>
         <div className="relative z-20 flex h-full items-center justify-center flex-col text-center">
@@ -73,6 +78,7 @@ export default function Home() {
                   className="w-full h-full object-cover"
                   controls
                   poster="/images/video-thumbnail.png"
+                  preload="metadata"
                 >
                   <source src="/videos/formula-sae.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
